@@ -1,0 +1,29 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets and local environment
+.env
+
+# Local data
+data/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Airflow runtime files
+airflow.db
+airflow-webserver.pid
+airflow.cfg
+logs/
