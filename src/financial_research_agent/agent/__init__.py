@@ -1,5 +1,10 @@
 """Research agent components, tools, and schemas."""
 
+from financial_research_agent.agent.evaluation import (
+    AgentEvaluator,
+    EvaluationError,
+    get_default_eval_suite,
+)
 from financial_research_agent.agent.llm_client import (
     BaseLLMClient,
     LLMAPIError,
@@ -31,6 +36,9 @@ from financial_research_agent.agent.schemas import (
     AgentStep,
     ChatMessage,
     Citation,
+    EvaluationCase,
+    EvaluationResult,
+    EvaluationSummary,
     FinancialResearchReport,
     FunctionCall,
     LLMResponse,
@@ -47,12 +55,17 @@ from financial_research_agent.agent.schemas import (
 
 __all__ = [
     "AgentError",
+    "AgentEvaluator",
     "AgentMaxIterationsError",
     "AgentRunResult",
     "AgentStep",
     "BaseLLMClient",
     "ChatMessage",
     "Citation",
+    "EvaluationCase",
+    "EvaluationError",
+    "EvaluationResult",
+    "EvaluationSummary",
     "FinancialResearchReport",
     "FunctionCall",
     "LLMAPIError",
@@ -78,4 +91,5 @@ __all__ = [
     "ToolCall",
     "ToolExecutionError",
     "ToolExecutionRecord",
+    "get_default_eval_suite",
 ]
