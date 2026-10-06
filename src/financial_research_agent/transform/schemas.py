@@ -1,4 +1,4 @@
-"""Schemas for transformed documents, extracted filing sections, and text chunks."""
+"""Schemas for transformed documents, extracted filing sections, chunks, and embeddings."""
 
 from datetime import date
 from typing import Any
@@ -54,6 +54,30 @@ class DocumentChunk(BaseModel):
     chunk_index: int = Field(description="Zero-based sequential index of the chunk")
     token_count: int = Field(description="Number of tokens in the chunk content")
     content: str = Field(description="Raw text content of the chunk")
+    metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Associated metadata for search filtering",
+    )
+
+
+class EmbeddedChunk(BaseModel):
+    """A document chunk enriched with a dense vector embedding."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    chunk_id: str = Field(description="Unique identifier for the chunk")
+    document_id: str = Field(description="Parent CleanDocument identifier")
+    ticker: str = Field(description="Company equity ticker symbol")
+    form_type: str = Field(description="Origin filing or document type")
+    section_id: str | None = Field(
+        default=None,
+        description="Identifier of the origin filing section if applicable",
+    )
+    chunk_index: int = Field(description="Zero-based sequential index of the chunk")
+    content: str = Field(description="Raw text content of the chunk")
+    embedding: list[float] = Field(description="Dense vector embedding representation")
+    embedding_model: str = Field(description="Model used to generate the embedding")
+    dimensions: int = Field(description="Dimensionality of the embedding vector")
     metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Associated metadata for search filtering",
