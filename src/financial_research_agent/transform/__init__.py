@@ -18,6 +18,11 @@ from financial_research_agent.transform.schemas import (
     DocumentChunk,
     EmbeddedChunk,
     FilingSection,
+    SearchResult,
+)
+from financial_research_agent.transform.vector_store import (
+    VectorStore,
+    VectorStoreError,
 )
 
 __all__ = [
@@ -32,4 +37,7 @@ __all__ = [
     "FilingParser",
     "FilingSection",
     "ParserError",
+    "SearchResult",
+    "VectorStore",
+    "VectorStoreError",
 ]
