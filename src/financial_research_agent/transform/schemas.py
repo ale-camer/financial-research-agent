@@ -1,6 +1,6 @@
 """Schemas for transformed documents, extracted filing sections, chunks, and embeddings."""
 
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -91,3 +91,31 @@ class SearchResult(BaseModel):
 
     chunk: EmbeddedChunk = Field(description="Retrieved chunk containing content and metadata")
     score: float = Field(description="Cosine similarity score (higher indicates greater relevance)")
+
+
+class NormalizedMetrics(BaseModel):
+    """Standardized financial and statistical metrics derived from raw market data."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    ticker: str = Field(description="Company equity ticker symbol")
+    calculated_at: datetime = Field(description="UTC timestamp when metrics were calculated")
+    observation_count: int = Field(description="Number of price observations evaluated")
+    current_price: float = Field(description="Latest closing price in the series")
+    total_return: float = Field(description="Total cumulative percentage return across the period")
+    annualized_volatility: float = Field(
+        description="Annualized standard deviation of daily returns (252-day basis)"
+    )
+    high_period: float = Field(description="Highest price observation across the period")
+    low_period: float = Field(description="Lowest price observation across the period")
+    average_volume: float = Field(description="Mean trading volume across the period")
+    sma_20: float | None = Field(default=None, description="20-period simple moving average")
+    sma_50: float | None = Field(default=None, description="50-period simple moving average")
+    additional_metrics: dict[str, float] = Field(
+        default_factory=dict,
+        description="Optional additional statistical metrics (e.g. max_drawdown)",
+    )
+    metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Arbitrary calculation metadata",
+    )
