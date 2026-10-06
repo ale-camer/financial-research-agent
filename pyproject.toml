@@ -38,9 +38,16 @@ orchestration = [
     # Airflow does not support the newest Python releases yet.
     "apache-airflow>=2.10; python_version < '3.14'",
 ]
-all = [
-    "financial-research-agent[extract,transform,agent,orchestration]",
+api = [
+    "fastapi>=0.112",
+    "uvicorn>=0.30",
 ]
+all = [
+    "financial-research-agent[extract,transform,agent,orchestration,api]",
+]
+
+[project.scripts]
+financial-research-agent = "financial_research_agent.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -63,7 +70,7 @@ mypy_path = "src"
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["pandas.*", "yfinance.*", "feedparser.*"]
+module = ["pandas.*", "yfinance.*", "feedparser.*", "fastapi.*", "uvicorn.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
