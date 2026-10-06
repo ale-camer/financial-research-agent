@@ -26,6 +26,10 @@ from financial_research_agent.extract.sec_edgar import (
     SECEdgarClient,
     SECEdgarError,
 )
+from financial_research_agent.extract.storage import (
+    RawStorageWriter,
+    StorageError,
+)
 
 __all__ = [
     "DocumentType",
@@ -44,6 +48,8 @@ __all__ = [
     "RawNewsArticle",
     "RawPayload",
     "RawSECFiling",
+    "RawStorageWriter",
     "SECEdgarClient",
     "SECEdgarError",
+    "StorageError",
 ]
