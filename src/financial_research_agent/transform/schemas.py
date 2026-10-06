@@ -82,3 +82,12 @@ class EmbeddedChunk(BaseModel):
         default_factory=dict,
         description="Associated metadata for search filtering",
     )
+
+
+class SearchResult(BaseModel):
+    """A retrieved embedded chunk paired with its query similarity score."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    chunk: EmbeddedChunk = Field(description="Retrieved chunk containing content and metadata")
+    score: float = Field(description="Cosine similarity score (higher indicates greater relevance)")
