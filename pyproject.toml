@@ -70,7 +70,7 @@ mypy_path = "src"
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["pandas.*", "yfinance.*", "feedparser.*", "fastapi.*", "uvicorn.*"]
+module = ["pandas.*", "yfinance.*", "feedparser.*", "fastapi.*", "uvicorn.*", "yaml", "yaml.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
