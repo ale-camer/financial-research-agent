@@ -5,6 +5,11 @@ from financial_research_agent.extract.market_data import (
     MarketDataError,
     MarketDataExtractor,
 )
+from financial_research_agent.extract.news_rss import (
+    EmptyFeedError,
+    NewsExtractionError,
+    NewsRSSExtractor,
+)
 from financial_research_agent.extract.schemas import (
     DocumentType,
     MarketDataPoint,
@@ -24,12 +29,15 @@ from financial_research_agent.extract.sec_edgar import (
 
 __all__ = [
     "DocumentType",
+    "EmptyFeedError",
     "EmptyMarketDataError",
     "FilingNotFoundError",
     "InvalidUserAgentError",
     "MarketDataError",
     "MarketDataExtractor",
     "MarketDataPoint",
+    "NewsExtractionError",
+    "NewsRSSExtractor",
     "RawDocument",
     "RawDocumentMetadata",
     "RawMarketData",
