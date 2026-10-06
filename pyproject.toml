@@ -68,6 +68,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = [".", "src"]
 addopts = "--strict-markers -ra"
 markers = [
     "issue_0: Day 0 scaffolding",
