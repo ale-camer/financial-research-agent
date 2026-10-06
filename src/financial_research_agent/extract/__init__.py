@@ -10,9 +10,17 @@ from financial_research_agent.extract.schemas import (
     RawPayload,
     RawSECFiling,
 )
+from financial_research_agent.extract.sec_edgar import (
+    FilingNotFoundError,
+    InvalidUserAgentError,
+    SECEdgarClient,
+    SECEdgarError,
+)
 
 __all__ = [
     "DocumentType",
+    "FilingNotFoundError",
+    "InvalidUserAgentError",
     "MarketDataPoint",
     "RawDocument",
     "RawDocumentMetadata",
@@ -20,4 +28,6 @@ __all__ = [
     "RawNewsArticle",
     "RawPayload",
     "RawSECFiling",
+    "SECEdgarClient",
+    "SECEdgarError",
 ]
