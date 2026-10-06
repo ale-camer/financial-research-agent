@@ -8,6 +8,13 @@ from financial_research_agent.orchestration.schemas import (
     IngestionConfig,
     IngestionResult,
     IngestionTaskSummary,
+    TransformConfig,
+    TransformResult,
+    TransformTaskSummary,
+)
+from financial_research_agent.orchestration.transform import (
+    TransformError,
+    TransformPipeline,
 )
 
 __all__ = [
@@ -16,4 +23,9 @@ __all__ = [
     "IngestionPipeline",
     "IngestionResult",
     "IngestionTaskSummary",
+    "TransformConfig",
+    "TransformError",
+    "TransformPipeline",
+    "TransformResult",
+    "TransformTaskSummary",
 ]
