@@ -4,6 +4,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from financial_research_agent.transform.schemas import NormalizedMetrics
+
 
 class RetrievalQuery(BaseModel):
     """Parameters for executing a semantic retrieval query against indexed chunks."""
@@ -83,3 +85,44 @@ class RetrievalResult(BaseModel):
         description="Pre-formatted text representation of citations for LLM prompt context",
     )
     total_results: int = Field(description="Total number of citations retrieved")
+
+
+class MarketDataQuery(BaseModel):
+    """Parameters for querying equity market data and financial metrics."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    ticker: str = Field(description="Equity ticker symbol (e.g. AAPL)")
+    period: str = Field(
+        default="1y",
+        description="Time period for historical price extraction (e.g. 1mo, 3mo, 6mo, 1y, 2y, 5y)",
+    )
+    interval: str = Field(
+        default="1d",
+        description="Data observation interval (e.g. 1d, 1wk)",
+    )
+
+    @field_validator("ticker")
+    @classmethod
+    def validate_ticker(cls, value: str) -> str:
+        """Validate and normalize equity ticker symbol."""
+        cleaned = value.strip().upper()
+        if not cleaned:
+            raise ValueError("Ticker symbol cannot be empty.")
+        return cleaned
+
+
+class MarketDataResult(BaseModel):
+    """Normalized market data metrics and formatted summary for research agents."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    ticker: str = Field(description="Equity ticker symbol")
+    period: str = Field(description="Historical evaluation period requested")
+    interval: str = Field(description="Data observation interval")
+    metrics: NormalizedMetrics = Field(
+        description="Normalized financial and statistical metrics",
+    )
+    formatted_summary: str = Field(
+        description="Human and LLM-readable structured performance summary",
+    )
