@@ -421,3 +421,101 @@ class FinancialResearchReport(BaseModel):
             blocks.append("*No external SEC filing citations recorded.*")
 
         return "\n\n".join(blocks)
+
+
+class EvaluationCase(BaseModel):
+    """Benchmark test case for evaluating agent research accuracy and tool behavior."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    case_id: str = Field(description="Unique identifier for the benchmark case")
+    query: str = Field(description="Natural language query input for the agent")
+    ticker: str = Field(description="Target equity ticker symbol")
+    expected_tools: list[str] = Field(
+        default_factory=list,
+        description="Names of tools expected to be invoked during the run",
+    )
+    required_keywords: list[str] = Field(
+        default_factory=list,
+        description="Keywords expected to appear in the final answer",
+    )
+    min_citations: int = Field(
+        default=0,
+        ge=0,
+        description="Minimum number of filing citations expected",
+    )
+    description: str = Field(
+        default="",
+        description="Human-readable description of test case intent",
+    )
+    metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Arbitrary benchmark metadata",
+    )
+
+
+class EvaluationResult(BaseModel):
+    """Performance evaluation outcome for a single EvaluationCase run."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    case_id: str = Field(description="Identifier of the evaluated benchmark case")
+    passed: bool = Field(description="Whether the evaluation criteria were satisfied")
+    tool_usage_score: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Proportion of expected tools that were called",
+    )
+    keyword_coverage: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Proportion of required keywords present in final response",
+    )
+    citation_count: int = Field(
+        ge=0,
+        description="Total citations produced or referenced",
+    )
+    citation_score: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Citation requirement satisfaction score",
+    )
+    iterations: int = Field(ge=0, description="Agent loop iterations completed")
+    tokens_used: int = Field(ge=0, description="Total tokens consumed in the run")
+    error_message: str | None = Field(
+        default=None,
+        description="Failure or exception details if run failed",
+    )
+    details: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Granular diagnostic evaluation metrics",
+    )
+
+
+class EvaluationSummary(BaseModel):
+    """Aggregated benchmark report across an evaluation test suite."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    total_cases: int = Field(ge=0, description="Total test cases evaluated")
+    passed_cases: int = Field(ge=0, description="Count of passed test cases")
+    pass_rate: float = Field(ge=0.0, le=1.0, description="Overall suite pass rate")
+    average_tool_score: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Mean tool usage score across suite",
+    )
+    average_keyword_score: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Mean keyword coverage score across suite",
+    )
+    average_citation_score: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Mean citation compliance score across suite",
+    )
+    results: list[EvaluationResult] = Field(
+        default_factory=list,
+        description="Individual test case results",
+    )
