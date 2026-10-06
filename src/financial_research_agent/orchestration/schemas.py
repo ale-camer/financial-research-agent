@@ -119,3 +119,113 @@ class IngestionResult(BaseModel):
         default="success",
         description="Overall pipeline status ('success', 'partial_success', 'failed')",
     )
+
+
+class TransformConfig(BaseModel):
+    """Configuration parameters for transformation and vector indexing tasks."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    raw_storage_dir: str = Field(
+        default="./data/raw",
+        description="Source directory containing raw partitioned document JSONs",
+    )
+    processed_storage_dir: str = Field(
+        default="./data/processed",
+        description="Destination directory for parsed documents and normalized metrics",
+    )
+    vector_store_path: str = Field(
+        default="./data/vector_store/index.json",
+        description="Path for persisting the vector store JSON index",
+    )
+    chunk_max_tokens: int = Field(
+        default=500,
+        ge=1,
+        description="Maximum token capacity per document chunk",
+    )
+    chunk_overlap_tokens: int = Field(
+        default=50,
+        ge=0,
+        description="Token overlap between consecutive chunks",
+    )
+    embedding_dimensions: int = Field(
+        default=1536,
+        ge=1,
+        description="Expected dimensional embedding vector length",
+    )
+    tickers: list[str] | None = Field(
+        default=None,
+        description="Optional ticker filter; if None, transforms all found in raw storage",
+    )
+    overwrite: bool = Field(
+        default=True,
+        description="Whether to overwrite existing transformed artifacts",
+    )
+
+
+class TransformTaskSummary(BaseModel):
+    """Execution metrics and artifact outputs for a specific transform sub-task."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    task_name: str = Field(description="Name of the transformation task")
+    items_processed: int = Field(
+        default=0,
+        ge=0,
+        description="Number of input documents/records read and processed",
+    )
+    items_produced: int = Field(
+        default=0,
+        ge=0,
+        description="Number of outputs created (clean docs, chunks, or metrics)",
+    )
+    output_paths: list[str] = Field(
+        default_factory=list,
+        description="Storage paths of artifacts produced or modified",
+    )
+    errors: list[str] = Field(
+        default_factory=list,
+        description="List of error messages encountered during task execution",
+    )
+
+
+class TransformResult(BaseModel):
+    """Aggregate execution summary and telemetry for a transformation pipeline run."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    run_id: str = Field(description="Unique identifier for the transform pipeline run")
+    started_at: datetime = Field(description="UTC timestamp when the transform began")
+    completed_at: datetime = Field(description="UTC timestamp when the transform completed")
+    duration_seconds: float = Field(
+        ge=0.0,
+        description="Total elapsed pipeline execution time in seconds",
+    )
+    documents_parsed: int = Field(
+        default=0,
+        ge=0,
+        description="Total raw documents parsed and cleaned",
+    )
+    chunks_created: int = Field(
+        default=0,
+        ge=0,
+        description="Total chunks generated from parsed documents",
+    )
+    chunks_indexed: int = Field(
+        default=0,
+        ge=0,
+        description="Total embedded chunks added to the vector store",
+    )
+    metrics_normalized: int = Field(
+        default=0,
+        ge=0,
+        description="Total financial market series normalized into quantitative metrics",
+    )
+    task_summaries: list[TransformTaskSummary] = Field(
+        default_factory=list,
+        description="Per-task execution summaries",
+    )
+    status: str = Field(
+        default="success",
+        description="Overall pipeline status ('success', 'partial_success', 'failed')",
+    )
