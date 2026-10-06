@@ -8,6 +8,10 @@ from financial_research_agent.transform.embeddings import (
     EmbeddingError,
     EmbeddingGenerator,
 )
+from financial_research_agent.transform.normalizer import (
+    MetricsNormalizer,
+    NormalizerError,
+)
 from financial_research_agent.transform.parser import (
     EmptyContentError,
     FilingParser,
@@ -18,6 +22,7 @@ from financial_research_agent.transform.schemas import (
     DocumentChunk,
     EmbeddedChunk,
     FilingSection,
+    NormalizedMetrics,
     SearchResult,
 )
 from financial_research_agent.transform.vector_store import (
@@ -36,6 +41,9 @@ __all__ = [
     "EmptyContentError",
     "FilingParser",
     "FilingSection",
+    "MetricsNormalizer",
+    "NormalizedMetrics",
+    "NormalizerError",
     "ParserError",
     "SearchResult",
     "VectorStore",
