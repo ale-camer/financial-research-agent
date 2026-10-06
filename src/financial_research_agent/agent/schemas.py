@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
@@ -319,3 +320,104 @@ class AgentRunResult(BaseModel):
         default_factory=list,
         description="Complete message history",
     )
+
+
+class ReportSection(BaseModel):
+    """A distinct analytical section within a financial research report."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    title: str = Field(description="Section heading title")
+    content: str = Field(description="Body content in markdown format")
+    citations: list[Citation] = Field(
+        default_factory=list,
+        description="Citations directly referenced in this section",
+    )
+
+
+class FinancialResearchReport(BaseModel):
+    """Structured publication-ready equity research report with audit citations."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    ticker: str = Field(description="Company equity ticker symbol")
+    title: str = Field(description="Title of the research report")
+    generated_at: datetime = Field(
+        description="UTC timestamp when the report was generated",
+    )
+    executive_summary: str = Field(
+        description="Executive summary synthesizing principal findings",
+    )
+    sections: list[ReportSection] = Field(
+        default_factory=list,
+        description="Structured sections of the report",
+    )
+    key_metrics: NormalizedMetrics | None = Field(
+        default=None,
+        description="Quantitative equity performance metrics if available",
+    )
+    citations: list[Citation] = Field(
+        default_factory=list,
+        description="Deduplicated list of source filing citations referenced",
+    )
+    raw_query: str = Field(description="Original research question or prompt")
+    metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Associated execution and provenance metadata",
+    )
+
+    def to_markdown(self) -> str:
+        """Render the complete research report into standard publication markdown."""
+        date_str = self.generated_at.strftime("%Y-%m-%d %H:%M:%S UTC")
+        blocks: list[str] = [
+            f"# {self.title} ({self.ticker})",
+            f"*Generated on: {date_str} | Query: {self.raw_query}*",
+            f"## Executive Summary\n\n{self.executive_summary}",
+        ]
+
+        if self.key_metrics is not None:
+            km = self.key_metrics
+            sma_20_str = f"${km.sma_20:.2f}" if km.sma_20 is not None else "N/A"
+            sma_50_str = f"${km.sma_50:.2f}" if km.sma_50 is not None else "N/A"
+            max_dd = km.additional_metrics.get("max_drawdown")
+            max_dd_str = f"{max_dd:.2%}" if max_dd is not None else "N/A"
+
+            metrics_table = [
+                "## Key Market Metrics",
+                "| Metric | Value |",
+                "|:---|:---|",
+                f"| Current Price | ${km.current_price:.2f} |",
+                f"| Total Return | {km.total_return:.2%} |",
+                f"| Annualized Volatility | {km.annualized_volatility:.2%} |",
+                f"| Period Range | ${km.low_period:.2f} - ${km.high_period:.2f} |",
+                f"| Average Daily Volume | {km.average_volume:,.0f} |",
+                f"| 20-Day SMA | {sma_20_str} |",
+                f"| 50-Day SMA | {sma_50_str} |",
+                f"| Max Drawdown | {max_dd_str} |",
+            ]
+            blocks.append("\n".join(metrics_table))
+
+        for section in self.sections:
+            blocks.append(f"## {section.title}\n\n{section.content}")
+
+        blocks.append("## Sources & Citations")
+        if self.citations:
+            table_lines = [
+                "| # | Reference | Form | Section | Chunk ID | Score | Excerpt Preview |",
+                "|:---|:---|:---|:---|:---|:---|:---|",
+            ]
+            for idx, cit in enumerate(self.citations, start=1):
+                clean_sec = cit.section_id or "N/A"
+                snippet = cit.content.strip().replace("\n", " ")
+                if len(snippet) > 80:
+                    snippet = snippet[:77] + "..."
+                snippet = snippet.replace("|", "\\|")
+                table_lines.append(
+                    f"| {idx} | {cit.reference} | {cit.form_type} | {clean_sec} | "
+                    f"`{cit.chunk_id}` | {cit.score:.4f} | {snippet} |"
+                )
+            blocks.append("\n".join(table_lines))
+        else:
+            blocks.append("*No external SEC filing citations recorded.*")
+
+        return "\n\n".join(blocks)

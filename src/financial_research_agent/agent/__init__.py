@@ -18,6 +18,10 @@ from financial_research_agent.agent.market_data_tool import (
     MarketDataTool,
     MarketDataToolError,
 )
+from financial_research_agent.agent.report_generator import (
+    ReportGenerator,
+    ReportGeneratorError,
+)
 from financial_research_agent.agent.retrieval_tool import (
     RetrievalError,
     RetrievalTool,
@@ -27,11 +31,13 @@ from financial_research_agent.agent.schemas import (
     AgentStep,
     ChatMessage,
     Citation,
+    FinancialResearchReport,
     FunctionCall,
     LLMResponse,
     MarketDataQuery,
     MarketDataResult,
     MessageRole,
+    ReportSection,
     RetrievalQuery,
     RetrievalResult,
     TokenUsage,
@@ -47,6 +53,7 @@ __all__ = [
     "BaseLLMClient",
     "ChatMessage",
     "Citation",
+    "FinancialResearchReport",
     "FunctionCall",
     "LLMAPIError",
     "LLMConfigError",
@@ -59,6 +66,9 @@ __all__ = [
     "MessageRole",
     "MockLLMClient",
     "OpenAILLMClient",
+    "ReportGenerator",
+    "ReportGeneratorError",
+    "ReportSection",
     "ResearchAgent",
     "RetrievalError",
     "RetrievalQuery",
