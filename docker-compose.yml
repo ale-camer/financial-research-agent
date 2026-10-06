@@ -1,0 +1,50 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: financial-research-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATA_DIR=/app/data
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o}
+      - SEC_USER_AGENT=${SEC_USER_AGENT:-}
+      - VECTOR_STORE_URL=${VECTOR_STORE_URL:-}
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: financial-research-cli
+    environment:
+      - DATA_DIR=/app/data
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o}
+      - SEC_USER_AGENT=${SEC_USER_AGENT:-}
+      - VECTOR_STORE_URL=${VECTOR_STORE_URL:-}
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./data:/app/data
+    entrypoint: ["financial-research-agent"]
+    profiles:
+      - cli
+    stdin_open: true
+    tty: true
