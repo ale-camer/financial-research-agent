@@ -268,3 +268,54 @@ class LLMResponse(BaseModel):
         description="Token usage metrics for this completion",
     )
     model: str = Field(default="", description="Name or identifier of the responding model")
+
+
+class ToolExecutionRecord(BaseModel):
+    """Execution output and telemetry for a single tool call."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    tool_call: ToolCall = Field(description="The tool call requested by the model")
+    output: str = Field(description="The string result produced by the tool")
+    is_error: bool = Field(default=False, description="Whether the tool execution failed")
+
+
+class AgentStep(BaseModel):
+    """Record of a single reasoning and tool execution iteration within the agent loop."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    step_number: int = Field(description="1-based iteration step counter")
+    assistant_message: ChatMessage = Field(
+        description="The assistant response message generated in this step",
+    )
+    tool_executions: list[ToolExecutionRecord] = Field(
+        default_factory=list,
+        description="Tool executions triggered in this step",
+    )
+    tokens_used: TokenUsage = Field(
+        default_factory=TokenUsage,
+        description="Tokens consumed during this step",
+    )
+
+
+class AgentRunResult(BaseModel):
+    """Complete trajectory and synthesized answer from an agent execution run."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    query: str = Field(description="Original user query input")
+    final_response: str = Field(description="Final answer synthesized by the agent")
+    steps: list[AgentStep] = Field(
+        default_factory=list,
+        description="Sequence of reasoning and tool execution steps",
+    )
+    total_tokens: TokenUsage = Field(
+        default_factory=TokenUsage,
+        description="Total tokens consumed across all steps",
+    )
+    iterations: int = Field(description="Number of loop iterations completed")
+    messages: list[ChatMessage] = Field(
+        default_factory=list,
+        description="Complete message history",
+    )
