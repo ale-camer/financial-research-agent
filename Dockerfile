@@ -41,4 +41,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Default execution: launch FastAPI REST service via Uvicorn
-CMD ["uvicorn", "financial_research_agent.api.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
